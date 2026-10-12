@@ -1,0 +1,110 @@
+{
+ "version": 1,
+ "backends": {
+  "claude_cli": {
+   "type": "claude_cli",
+   "command": "claude"
+  }
+ },
+ "nodes": {
+  "capability_probe": {
+   "backend": "claude_cli",
+   "model": "claude-sonnet-5-5",
+   "template": "stapipe/templates/capability_probe.md",
+   "template_sha256": "3fb87e79fe827d85a8d4fab17a821956e000d7b33bd5ef2ec404c8e5083511eb",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "source_visual_facts": {
+   "backend": "claude_cli",
+   "model": "claude-sonnet-5-5",
+   "template": "stapipe/templates/source_visual_facts.md",
+   "template_sha256": "dbbbac3d9818800f8d5170afc715f54b3c225e83006760713d4025e4235520de",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "source_audio_facts": {
+   "backend": null,
+   "model": null,
+   "template": "stapipe/templates/source_audio_facts.md",
+   "template_sha256": "6199b6e2c3b4b6df1b3ff0138b5681edeee404c75cc885209d215ae32e6770a0",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "target_completeness": {
+   "backend": "claude_cli",
+   "model": "claude-sonnet-5-5",
+   "template": "stapipe/templates/target_completeness.md",
+   "template_sha256": "41876752a3d42d25173a27b27c50d734bef485b7d0945cce4378e6a829aab715",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "reference_relations": {
+   "backend": "claude_cli",
+   "model": "claude-opus-5-5",
+   "template": "stapipe/templates/reference_relations.md",
+   "template_sha256": "8364ae0fa95e8fdddc2ab0b6a465b883ef1ef7376e6c784608124d90fd6210a1",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "duplicate_review": {
+   "backend": "claude_cli",
+   "model": "claude-sonnet-5-5",
+   "template": "stapipe/templates/duplicate_review.md",
+   "template_sha256": "a674f099a2ccba5e9feaf25d026be17d9eb97e0e730f444b283d0f47a53ba96b",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "exported_visual_facts": {
+   "backend": "claude_cli",
+   "model": "claude-opus-5-5",
+   "template": "stapipe/templates/exported_visual_facts.md",
+   "template_sha256": "212f92228906a120efe7467792ec95733e4965d975ac3c82d1576817b259c668",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "exported_audio_facts": {
+   "backend": null,
+   "model": null,
+   "template": "stapipe/templates/exported_audio_facts.md",
+   "template_sha256": "0eb3d8a4f61b1dff402e5e17d888119e778a0bcb9628bb69cc3ac737652c1edf",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "prompt_writer": {
+   "backend": "claude_cli",
+   "model": "claude-opus-5-5",
+   "template": "stapipe/templates/prompt_writer.md",
+   "template_sha256": "a068d9f07e77c2ffe33094ad62fb08d11023b3e113f3a02e56880b2daf10113b",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "semantic_auditor": {
+   "backend": "claude_cli",
+   "model": "claude-opus-5-5",
+   "template": "stapipe/templates/semantic_auditor.md",
+   "template_sha256": "6acc0dfbfcb412fc41aab461cda1f19bab1d9d038ed21f14d67d3006680af739",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  },
+  "prompt_repair": {
+   "backend": "claude_cli",
+   "model": "claude-opus-5-5",
+   "template": "stapipe/templates/prompt_repair.md",
+   "template_sha256": "db403fbda7cbac6c4d782893fca180163deaae300695177dd91b82acdf3985d8",
+   "implementation": "1",
+   "seed": 0,
+   "decoding": "backend default; the claude CLI exposes no temperature or seed"
+  }
+ }
+}

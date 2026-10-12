@@ -1,0 +1,13 @@
+# 小预算配置：用于端到端验证流程，不代表推荐的搜索强度。
+workflow_version: stapipe-v1
+workspace: ../ref2va-workspace
+input_video: examples/input.mp4
+max_samples: 1
+mode: record
+models_lock: models.lock.json
+search:
+  target_evaluation_budget: 10
+  shortlist_targets: 3
+  reference_pool_per_type: 6
+  reference_bundles_per_target: 2
+  export_pair_budget: 2

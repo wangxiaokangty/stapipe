@@ -1,0 +1,8 @@
+#!/bin/sh
+# 用法：ref2va <视频路径> [输出目录] [--config 配置文件] [--set 键=值 ...]
+# 结果写到 <输出目录>/<源标识>_<运行标识>/<样本标识>/{pure,work}；省略输出目录时写到 workspace 的 outputs/。
+# 标准输出：已发布样本的目录。不带 --config 时使用小预算配置 config.smoke.yaml。路径相对调用时的当前目录。
+here=$(cd "$(dirname "$0")" && pwd)
+[ -n "$1" ] || { echo "usage: ref2va <video> [out_dir] [--config FILE] [--set KEY=VALUE ...]" >&2; exit 64; }
+case " $* " in *" --config "*) ;; *) set -- "$@" --config "$here/config.smoke.yaml" ;; esac
+PYTHONPATH="$here${PYTHONPATH:+:$PYTHONPATH}" exec "$here/.venv/bin/python" -m stapipe run "$@"

@@ -1,0 +1,7 @@
+numpy
+pillow
+soundfile
+imageio-ffmpeg
+pyyaml
+jsonschema
+pytest

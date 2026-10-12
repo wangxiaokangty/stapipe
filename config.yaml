@@ -1,0 +1,10 @@
+# Ref2VA 静态流水线配置（stapipe-v1）。未写出的键取 stapipe/config.py 中的默认值。
+# workspace 相对本文件；其余业务路径相对 workspace。
+workflow_version: stapipe-v1
+workspace: ../ref2va-workspace
+input_video: examples/input.mp4
+max_samples: 1
+media_profile: local_h3_v1
+mode: record                   # record / replay / refresh
+seed: 0
+models_lock: models.lock.json

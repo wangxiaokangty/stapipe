@@ -1,0 +1,18 @@
+{
+  "output": "walkthrough.mp4",
+  "duration_seconds": 598.5833333333334,
+  "frames": 14366,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "fps": 24,
+  "voice": "Tingting",
+  "speech_rate": "200",
+  "chapters": 18,
+  "subtitle_cues": 72,
+  "sha256": "9d653f590c2ee37e2e1347cb17560b6de7f649241a0afcdeb8ba478f7e7f659c",
+  "source_sha256": "5e8b5cb5ccacc7a8a7233e3f2d6587471c5ad6883043f3f78058b891538b2f51",
+  "ffmpeg_version": "ffmpeg version 7.1 Copyright (c) 2000-2024 the FFmpeg developers",
+  "scope": "Teaching walkthrough; original example audio uncertainty remains unresolved; no pipeline, model training or H3 inference performed."
+}

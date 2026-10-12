@@ -1,0 +1,35 @@
+{
+  "status": "passed",
+  "scope": "Video artifact verification, not Ref2VA data qualification",
+  "full_decode_exit_code": 0,
+  "decoded_frames": 14366,
+  "expected_frames": 14366,
+  "duration_seconds": 598.5833333333334,
+  "size_bytes": 28000633,
+  "sha256": "9d653f590c2ee37e2e1347cb17560b6de7f649241a0afcdeb8ba478f7e7f659c",
+  "media": [
+    "Duration: 00:09:58.60, start: 0.000000, bitrate: 374 kb/s",
+    "Stream #0:0[0x1](und): Video: h264 (High) (avc1 / 0x31637661), yuv420p(tv, bt709/unknown/unknown, progressive), 1920x1080, 215 kb/s, 24 fps, 24 tbr, 24k tbn (default)",
+    "Stream #0:1[0x2](und): Audio: aac (LC) (mp4a / 0x6134706D), 48000 Hz, stereo, fltp, 152 kb/s (default)",
+    "Stream #0:2[0x3](eng): Data: bin_data (text / 0x74786574), 0 kb/s",
+    "Stream #0:0(und): Video: wrapped_avframe, yuv420p(tv, bt709/unknown/unknown, progressive), 1920x1080, q=2-31, 200 kb/s, 24 fps, 24 tbn (default)",
+    "Stream #0:1(und): Audio: pcm_s16le, 48000 Hz, stereo, s16, 1536 kb/s (default)"
+  ],
+  "audio_volume_db": {
+    "mean_volume": "-20.9",
+    "max_volume": "-5.2"
+  },
+  "subtitle_cues": 72,
+  "subtitle_ranges_valid": true,
+  "chapter_timeline_valid": true,
+  "visual_preview": {
+    "status": "passed",
+    "checked": "18-scene contact sheet, full-resolution prompt slide, and five frames extracted from the final MP4",
+    "findings": "Titles, formulas, source footage, captions and final frame readable; no observed clipping or overlap."
+  },
+  "not_performed": [
+    "Human listening review of source-ad dialogue",
+    "H3 model inference",
+    "Training"
+  ]
+}

@@ -1,0 +1,146 @@
+[
+  {
+    "index": 1,
+    "title": "从 raw_video 到训练样本",
+    "start_seconds": 0.0,
+    "end_seconds": 31.333333333333332,
+    "frames": 752,
+    "movie": "target"
+  },
+  {
+    "index": 2,
+    "title": "静态的是流程，模型仍然可以判断",
+    "start_seconds": 31.333333333333332,
+    "end_seconds": 61.375,
+    "frames": 721,
+    "movie": null
+  },
+  {
+    "index": 3,
+    "title": "先分清：条件 x 和监督 y",
+    "start_seconds": 61.375,
+    "end_seconds": 91.58333333333333,
+    "frames": 725,
+    "movie": null
+  },
+  {
+    "index": 4,
+    "title": "00—01  固定规则，完整读取原片",
+    "start_seconds": 91.58333333333333,
+    "end_seconds": 121.41666666666667,
+    "frames": 716,
+    "movie": "raw"
+  },
+  {
+    "index": 5,
+    "title": "02  先建立全片事实索引",
+    "start_seconds": 121.41666666666667,
+    "end_seconds": 153.83333333333334,
+    "frames": 778,
+    "movie": null
+  },
+  {
+    "index": 6,
+    "title": "03  先选目标候选",
+    "start_seconds": 153.83333333333334,
+    "end_seconds": 186.875,
+    "frames": 793,
+    "movie": "target"
+  },
+  {
+    "index": 7,
+    "title": "04  目标之外找参考",
+    "start_seconds": 186.875,
+    "end_seconds": 219.08333333333334,
+    "frames": 773,
+    "movie": null
+  },
+  {
+    "index": 8,
+    "title": "参考与目标：时间不重叠，内容也要查",
+    "start_seconds": 219.08333333333334,
+    "end_seconds": 251.875,
+    "frames": 787,
+    "movie": null
+  },
+  {
+    "index": 9,
+    "title": "05  为什么目标导出为 175 帧",
+    "start_seconds": 251.875,
+    "end_seconds": 282.2083333333333,
+    "frames": 728,
+    "movie": null
+  },
+  {
+    "index": 10,
+    "title": "真实例子暴露了一个门槛问题",
+    "start_seconds": 282.2083333333333,
+    "end_seconds": 316.5,
+    "frames": 823,
+    "movie": null
+  },
+  {
+    "index": 11,
+    "title": "画面和声音要一起对齐",
+    "start_seconds": 316.5,
+    "end_seconds": 349.75,
+    "frames": 798,
+    "movie": null
+  },
+  {
+    "index": 12,
+    "title": "06  导出后重新建立时间线",
+    "start_seconds": 349.75,
+    "end_seconds": 380.5,
+    "frames": 738,
+    "movie": null
+  },
+  {
+    "index": 13,
+    "title": "07  先分配标签，再编写提示词",
+    "start_seconds": 380.5,
+    "end_seconds": 416.1666666666667,
+    "frames": 856,
+    "movie": null
+  },
+  {
+    "index": 14,
+    "title": "事实 → 六段式提示词 → 数据记录",
+    "start_seconds": 416.1666666666667,
+    "end_seconds": 452.0416666666667,
+    "frames": 861,
+    "movie": null
+  },
+  {
+    "index": 15,
+    "title": "08—09  校验，并且最多修复一次",
+    "start_seconds": 452.0416666666667,
+    "end_seconds": 487.2916666666667,
+    "frames": 846,
+    "movie": null
+  },
+  {
+    "index": 16,
+    "title": "10  本例为什么停在 needs_review",
+    "start_seconds": 487.2916666666667,
+    "end_seconds": 521.625,
+    "frames": 824,
+    "movie": null
+  },
+  {
+    "index": 17,
+    "title": "复核通过以后，训练器会读什么",
+    "start_seconds": 521.625,
+    "end_seconds": 558.6666666666666,
+    "frames": 889,
+    "movie": null
+  },
+  {
+    "index": 18,
+    "title": "可复现、可改进，具体落在哪",
+    "start_seconds": 558.6666666666666,
+    "end_seconds": 598.5833333333334,
+    "frames": 958,
+    "movie": null
+  }
+]
