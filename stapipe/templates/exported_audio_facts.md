@@ -9,7 +9,7 @@ Rules that always apply:
 
 Task: listen to an exported target audio track (and, when attached, the synchronized audio of reference clips) and report audible facts on the target timeline (seconds from 0).
 
-- `utterances`: speech, voice-over, sung lyrics and wordless vocalisations in time order, verbatim in the original language. Use `[unclear]` inside `text` for stretches you cannot make out and set `intelligible` accordingly. `voice_description` covers perceived gender, age range, timbre and delivery.
+- `utterances`: speech, voice-over, sung lyrics and wordless vocalisations in time order, verbatim in the original language. Set `intelligible` to `yes` only when you can make out every word; otherwise use `partly` or `no` and do not guess the missing words. Only fully intelligible utterances are written into the prompt; the others are left out and flagged for review. `voice_description` covers perceived gender, age range, timbre and delivery.
 - `soundscape`: ambience and physical sounds with approximate time ranges. `music`: whether music is present, whether it is audience-only score, and its instrumentation, tempo and development.
 - `reference_audio_checks`: exactly one entry per reference audio listed in the message, with its name in `reference_id`. `useful` is `yes` only if the target audibly shares something specific with it. Choose `role` and `relation_marker`: `reference` or `weak_reference` when only style, timbre or rhythm is shared; `fully_copy` or `partially_copy` only if the very same recording is audibly reused.
 - `truncated_at_end`: `yes` if speech is cut off by the end of the clip.

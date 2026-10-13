@@ -22,6 +22,8 @@ from .verify import verify_package
 
 KNOWN_ERROR_KINDS = {"wrong_fact", "relation_overclaim", "unconfirmed_dialogue", "format"}
 SPEAKER_SPECIAL = ("off_screen", "unknown")
+# 听不清的对白整句不写入提示词（不写 <d>，不用占位符）；只保留区间供听辨复核。
+OMITTED_SPEECH_NOTE = "speech here could not be transcribed reliably and is left out of the prompt"
 
 
 def tid(frame: int) -> str:
@@ -149,11 +151,11 @@ def _jpeg(path, width: int) -> bytes:
         return buffer.getvalue()
 
 
-def _utterances_from_asr(evidence: dict, cfg, total: float) -> tuple[list[dict], list[dict]]:
-    """没有声音理解能力时：转录只是证据，低置信词写 [unclear]，全部标为未经听辨。"""
-    utterances, uncertain = [], []
+def _utterances_from_asr(evidence: dict, cfg, total: float) -> tuple[list[dict], list[dict], list[dict]]:
+    """没有声音理解能力时：转录只是证据，全部标为未经听辨。含低置信词的整句不写入提示词，只记录区间。"""
+    utterances, omitted, uncertain = [], [], []
     if not evidence.get("available"):
-        return utterances, [{"text": f"ASR unavailable: {evidence.get('reason')}", "span": [0.0, total]}]
+        return utterances, omitted, [{"text": f"ASR unavailable: {evidence.get('reason')}", "span": [0.0, total]}]
     language = LANGUAGES.get(evidence["asr"].get("language"), "Unknown")
     threshold = cfg.audio.confident_word_probability
     for seg in evidence["asr"]["segments"]:
@@ -164,26 +166,19 @@ def _utterances_from_asr(evidence: dict, cfg, total: float) -> tuple[list[dict],
             uncertain.append({"text": "possible speech or lyrics that ASR could not transcribe reliably",
                               "span": [seg["start"], min(total, seg["end"])]})
             continue
-        clear = all(w["p"] >= threshold for w in words)
-        utterances.append({"utterance_id": f"u{len(utterances) + 1}", "start": words[0]["s"],
-                           "end": min(total, words[-1]["e"]), "language": language,
-                           "status": "asr_confident_unverified" if clear else "unclear",
-                           "words": [{**w, "clear": w["p"] >= threshold} for w in words],
+        start, end = words[0]["s"], min(total, words[-1]["e"])
+        if not all(w["p"] >= threshold for w in words):
+            omitted.append({"start": start, "end": end, "reason": "low_confidence_asr_words"})
+            uncertain.append({"text": OMITTED_SPEECH_NOTE, "span": [max(0.0, start - 0.1), min(total, end + 0.1)]})
+            continue
+        utterances.append({"utterance_id": f"u{len(utterances) + 1}", "start": start, "end": end,
+                           "language": language, "status": "asr_confident_unverified", "words": words,
                            "asr_text": seg["text"], "voice_description": None})
-        if not clear:
-            uncertain.append({"text": f"low-confidence ASR words in {utterances[-1]['utterance_id']}",
-                              "span": [max(0.0, words[0]["s"] - 0.1), min(total, words[-1]["e"] + 0.1)]})
-    return utterances, uncertain
+    return utterances, omitted, uncertain
 
 
 def _words_text(words: list[dict]) -> str:
-    out: list[str] = []
-    for w in words:
-        token = w["w"] if w["clear"] else "[unclear]"
-        if token == "[unclear]" and out and out[-1] == "[unclear]":
-            continue
-        out.append(token)
-    return " ".join(out)
+    return " ".join(w["w"] for w in words)
 
 
 def _split_parts(utterance: dict, shots: list[dict], cutoff: bool) -> list[dict]:
@@ -256,14 +251,15 @@ def build_export_facts(ctx, m, pair: dict, plan: dict, pure: Path, work: Path, t
 
         audio_model = ctx.models.call("exported_audio_facts", content, schemas.EXPORTED_AUDIO_FACTS, validate_audio,
                                       scope)
+        heard = sorted(audio_model["utterances"], key=lambda u: (u["start"], u["end"]))
         utterances = [{"utterance_id": f"u{k + 1}", "start": u["start"], "end": min(total, u["end"]),
                        "language": u["language"], "kind": u["kind"], "voice_description": u["voice_description"],
-                       "status": "heard_by_model" if u["intelligible"] == "yes" else "unclear",
-                       "text": u["text"] if u["intelligible"] != "no" else "[unclear]", "words": None}
-                      for k, u in enumerate(sorted(audio_model["utterances"], key=lambda u: (u["start"], u["end"])))]
+                       "status": "heard_by_model", "text": u["text"], "words": None}
+                      for k, u in enumerate(u for u in heard if u["intelligible"] == "yes")]
+        omitted = [{"start": u["start"], "end": min(total, u["end"]), "kind": u["kind"],
+                    "reason": f"intelligible={u['intelligible']}"} for u in heard if u["intelligible"] != "yes"]
         uncertain = [{"text": u["text"], "span": [u["start"], u["end"]]} for u in audio_model["uncertainties"]]
-        uncertain += [{"text": f"{u['utterance_id']} not fully intelligible", "span": [u["start"], u["end"]]}
-                      for u in utterances if u["status"] == "unclear"]
+        uncertain += [{"text": OMITTED_SPEECH_NOTE, "span": [o["start"], o["end"]]} for o in omitted]
         for check in audio_model["reference_audio_checks"]:
             if check["useful"] == "yes" and check["relation_marker"] != "none" and check["role"] != "none":
                 marker = check["relation_marker"]
@@ -277,7 +273,7 @@ def build_export_facts(ctx, m, pair: dict, plan: dict, pure: Path, work: Path, t
                 reference_audio.append({"reference_name": check["reference_id"], "role": check["role"],
                                         "relation_marker": marker, "note": check["note"]})
     else:
-        utterances, uncertain = _utterances_from_asr(evidence, cfg, total)
+        utterances, omitted, uncertain = _utterances_from_asr(evidence, cfg, total)
 
     # 证据帧：固定步长 + 候选切镜两侧 + 末帧；参考取导出文件本身
     step = max(1, round(cfg.evidence.export_step_seconds * FPS))
@@ -425,6 +421,7 @@ def build_export_facts(ctx, m, pair: dict, plan: dict, pure: Path, work: Path, t
         "subjects": [{"key": s["key"], "description": s["description"], "first_frame": int(s["first_frame_id"][1:])}
                      for s in visual["subjects"]],
         "relations": relations, "utterances": utterances,
+        "omitted_speech": omitted,       # 听不清而未写入提示词的对白；只有时间区间，没有文字
         "audio": {"observed_by_model": can_hear,
                   "unobserved_reason": None if can_hear else (ctx.capabilities.get("audio_reason")
                                                               or "audio_capability_missing"),
@@ -480,7 +477,9 @@ def _audit_content(ctx, plan, pure: Path, facts: dict, labels: dict, prompt: str
                     + "\nSPEECH EVIDENCE (" + ("heard by an audio model" if facts["audio"]["observed_by_model"]
                                                 else "UNVERIFIED ASR; you cannot hear the audio") + "): "
                     + json.dumps([{k: u[k] for k in ("utterance_id", "start", "end", "text", "status", "speaker_key")}
-                                  for u in facts["utterances"]], ensure_ascii=False)),
+                                  for u in facts["utterances"]], ensure_ascii=False)
+                    + "\nSPEECH LEFT OUT OF THE PROMPT ON PURPOSE (could not be transcribed reliably): "
+                    + json.dumps([[o["start"], o["end"]] for o in facts["omitted_speech"]])),
                text(f"EXPORTED TARGET frames (frame tNNNN is at NNNN/{FPS}s):")]
     ids = set()
     for k in keep:
@@ -580,7 +579,7 @@ def build_pair(ctx, m, pair: dict, group: dict, timeline: dict, attempt: dict) -
         if not facts["audio"]["observed_by_model"]:
             spans.append([0.0, total])                  # 无法精确定位的声音不确定性标记整个目标区间
         spans = merge_spans(spans, 0.0, total)
-        needs_audio_review = bool(spans) or "[unclear]" in prompt
+        needs_audio_review = bool(spans)
         record = {"id": attempt["provisional_sample_id"], "split_group": group["id"],
                   "path_base": "directory containing dataset.jsonl", "prompt": prompt,
                   "references": labels["reference_records"], "target": target_record,

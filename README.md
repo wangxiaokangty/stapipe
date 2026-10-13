@@ -212,15 +212,15 @@ overall_soundscape:
 non_diegetic_music:
 ```
 
-程序分配各模态连续编号，写入对应参考路径。`include_audio: false` 时没有该同步音轨的 `audio_label`；启用时 Audio 编号与 Video 编号独立。Subject 按目标首次出现顺序分配，发声主体按首次实际发声顺序分配 `(S1)` 等；二者互不借用编号。直接复用配乐中的词句可按指南归属 Audio，不凭空创造画面说话人。
+程序分配各模态连续编号，写入对应参考路径。`include_audio: false` 时没有该同步音轨的 `audio_label`；启用时 Audio 编号与 Video 编号独立。Subject 按目标首次出现顺序分配，发声主体按首次实际发声顺序分配 `(S1)` 等，只计写入提示词的对白；二者互不借用编号。直接复用配乐中的词句可按指南归属 Audio，不凭空创造画面说话人。
 
-渲染器插入 `[Shot 1]`，后续插入 `[Shot N] At MM:SS.mmm, ...`，时间来自确认的导出切镜帧。正文英文，台词、歌词和可见文字保留原语言。对白只能来自目标声音，按 `<d>[Language] ...</d>` 渲染；跨镜头与截断按指南处理。听不清时写 `[unclear]`，合并并保存目标相对时间区间，同时设置 `needs_audio_review: true`。声音不确定但无法精确定位时可标记整个目标区间；纯视觉问题放在 `verification.json`，不滥用声音字段。
+渲染器插入 `[Shot 1]`，后续插入 `[Shot N] At MM:SS.mmm, ...`，时间来自确认的导出切镜帧。正文英文，台词、歌词和可见文字保留原语言。对白只能来自目标声音，按 `<d>[Language] ...</d>` 渲染；跨镜头与截断按指南处理。听不清的对白整句不写入提示词：不渲染 `<d>` 块，不写 `[unclear]` 之类的占位符，也不只摘录其中听清的词；只把它的目标相对时间区间合并保存，同时设置 `needs_audio_review: true`。H3 指南只在直接复用参考音频词句时要求用 `[unclear]`，本实现不渲染这种情形，所以最终提示词里出现该占位符会被结构检查判为失败。声音不确定但无法精确定位时可标记整个目标区间；纯视觉问题放在 `verification.json`，不滥用声音字段。
 
 生成类 `detailed_description` 通常 350–500 英文单词，这是提示而非编造细节的硬指标。视觉关系枚举限于 `fully_preserved`、`partially_preserved`、`attribute_transfer`、`weak_reference`；声音关系限于 `fully_copy`、`partially_copy`、`reference`、`weak_reference`。默认任务前缀为 `[reference generation]`，按真实关系添加 `audio reference` 或 `audio reuse`；仅有真实连续关系时使用 `video continuation`，不因有视频就添加 `video editing`。
 
 审查节点独立接收真实导出媒体和草稿，检查主体、动作、对白、参考关系与证据支持。它不查看写作节点的推理过程，也不能只读文字就宣布画面一致。同模型复核有相关错误风险，模型投票或一致赞成不等于人工验证。
 
-最多一次文本修复只允许：删去无证据的非关键修饰、纠正格式、将未确认对白改为 `[unclear]`，或用已确认事实替换错误文字。不得修改媒体、选段、关系、时间线或把审查结果改成通过；修复后重跑全部提示词与语义检查。审查后可以汇总质量标记，但任何正文变更都必须经过上述修复与复查，不能在最终审查之后再偷偷改正文。核心关系不成立、媒体越界或语义边界错误直接淘汰该配对。未解决的已知事实错误不能作为 `needs_review` 发布。
+最多一次文本修复只允许：删去无证据的非关键修饰、纠正格式、删去未确认的对白，或用已确认事实替换错误文字。不得修改媒体、选段、关系、时间线或把审查结果改成通过；修复后重跑全部提示词与语义检查。审查后可以汇总质量标记，但任何正文变更都必须经过上述修复与复查，不能在最终审查之后再偷偷改正文。核心关系不成立、媒体越界或语义边界错误直接淘汰该配对。未解决的已知事实错误不能作为 `needs_review` 发布。
 
 ## 7. 校验、状态与发布
 
@@ -346,7 +346,7 @@ uv pip install --python .venv/bin/python -r requirements.txt   # 首次
 
 以下是实现时做出的取舍，全部写入运行记录，不影响“程序决定下一步”的原则：
 
-- **模型后端。** `models.lock.json` 默认让视觉与文本节点走本机 `claude -p`（禁用全部工具，只传图像与 JSON 模式）。它不能听声音，所以两个声音节点没有后端：`audio_facts_dialogue_and_speakers` 恒为 `not_checked`，整段目标标为待听辨，**样本最高只能到 `needs_review`**。对白来自 Whisper 转录，低置信词写 `[unclear]`；声景与配乐只依据 CLAP 标签作保守描述。要得到 `completed`，需要在锁文件里给 `source_audio_facts`、`exported_audio_facts` 配一个能听音频的后端。代码里有 `openai_compatible` 后端可用于此，但**没有用真实服务验证过**。
+- **模型后端。** `models.lock.json` 默认让视觉与文本节点走本机 `claude -p`（禁用全部工具，只传图像与 JSON 模式）。它不能听声音，所以两个声音节点没有后端：`audio_facts_dialogue_and_speakers` 恒为 `not_checked`，整段目标标为待听辨，**样本最高只能到 `needs_review`**。对白来自 Whisper 转录，含低置信词的整句不写入提示词、只记录待听辨区间；声景与配乐只依据 CLAP 标签作保守描述。要得到 `completed`，需要在锁文件里给 `source_audio_facts`、`exported_audio_facts` 配一个能听音频的后端。代码里有 `openai_compatible` 后端可用于此，但**没有用真实服务验证过**。
 - **同步音轨与独立音频。** 只有声音节点确认参考音轨确有用途时才启用 `include_audio`；否则参考视频导出为无声文件，文件与标记一致。独立参考音频、图片主体裁剪、显式 `OUTPUT_DIR`/`WORK_DIR` 未实现。
 - **检索特征。** 没有图像嵌入模型；参考召回使用时间线里的主体键、清晰度和边界类别。近重复检查使用 16×9 灰度逐帧差与覆盖率，歧义时调用 `duplicate_review`。
 - **模型调用的组织。** 参考关系按“每个目标一次调用、同时看全部候选参考”执行，而不是逐个参考调用；导出目标的切镜确认并入 `exported_visual_facts`，模型指出漏检时固定地细化并重跑至多一次；源窗口按顺序执行，把主体登记表传给下一窗口以保持同一主体键。

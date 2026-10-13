@@ -351,7 +351,7 @@ def build_pair(ctx, ops, media, pair, group, attempt):
 
     # 非对白的声音关系不确定性也需要设置 needs_audio_review；视觉问题只进报告。
     # 若审查新增声音不确定性，合并区间并刷新标记，不能保留旧 false。
-    # 正文不能在最终审查后变化；仍需改成 [unclear] 的台词应在上面的修复循环解决。
+    # 正文不能在最终审查后变化；仍需删去的未确认台词应在上面的修复循环解决。
     ops.apply_reviewed_uncertainty_flags_only(package, facts, review, checks)
     checks.update(ops.verify_final_record_flags_and_text(package, facts))
     status = classify_sample(checks)
@@ -457,7 +457,8 @@ def commit_without_overwrite(ctx, ops, artifact):
 # 4. 检查 schema、条件隔离、媒体时长/计数、源区间与所有媒体首尾均为硬约束。
 # 5. 内容不合格抛 RejectPair；缺能力、服务/解码/写入/程序异常抛 Blocked。
 # 6. apply_reviewed_uncertainty_flags_only 只更新布尔值、区间和待复核报告，不改正文。
-#    未确认对白改为 [unclear] 等正文变更只能进入固定修复循环并重新接受审查。
+#    删去未确认对白等正文变更只能进入固定修复循环并重新接受审查。听不清的对白整句不写入提示词，
+#    不使用 [unclear] 占位符，只保存区间并设置 needs_audio_review。
 # 7. commit 后只有已提交索引对消费者可见；中断恢复不能覆盖另一有效运行。
 
 if __name__ == "__main__":

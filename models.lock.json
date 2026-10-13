@@ -74,7 +74,7 @@
    "backend": null,
    "model": null,
    "template": "stapipe/templates/exported_audio_facts.md",
-   "template_sha256": "0eb3d8a4f61b1dff402e5e17d888119e778a0bcb9628bb69cc3ac737652c1edf",
+   "template_sha256": "25dbe7ffe7c78b9e7638ca4556aa7ebf149467912aa0818ea7ab5b7e541d006a",
    "implementation": "1",
    "seed": 0,
    "decoding": "backend default; the claude CLI exposes no temperature or seed"
@@ -83,7 +83,7 @@
    "backend": "claude_cli",
    "model": "claude-opus-5-5",
    "template": "stapipe/templates/prompt_writer.md",
-   "template_sha256": "a068d9f07e77c2ffe33094ad62fb08d11023b3e113f3a02e56880b2daf10113b",
+   "template_sha256": "0b02ae4969588d44b2a631656f14c0e8f5934a0670214eaf6234daa19811175d",
    "implementation": "1",
    "seed": 0,
    "decoding": "backend default; the claude CLI exposes no temperature or seed"
@@ -92,7 +92,7 @@
    "backend": "claude_cli",
    "model": "claude-opus-5-5",
    "template": "stapipe/templates/semantic_auditor.md",
-   "template_sha256": "6acc0dfbfcb412fc41aab461cda1f19bab1d9d038ed21f14d67d3006680af739",
+   "template_sha256": "79c74073b3468e2972905b6c7e2e319bbef166111ae81bff14acfa0124f34aa7",
    "implementation": "1",
    "seed": 0,
    "decoding": "backend default; the claude CLI exposes no temperature or seed"
@@ -101,7 +101,7 @@
    "backend": "claude_cli",
    "model": "claude-opus-5-5",
    "template": "stapipe/templates/prompt_repair.md",
-   "template_sha256": "db403fbda7cbac6c4d782893fca180163deaae300695177dd91b82acdf3985d8",
+   "template_sha256": "33a79670c7a8ac642cb078a54966a4963b4ada9adf1d3cc9dd664f33d3a79431",
    "implementation": "1",
    "seed": 0,
    "decoding": "backend default; the claude CLI exposes no temperature or seed"

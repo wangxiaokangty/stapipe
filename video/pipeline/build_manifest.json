@@ -1,0 +1,16 @@
+{
+  "output": "pipeline_explainer.mp4",
+  "duration_seconds": 548.25,
+  "frames": 13158,
+  "resolution": [
+    1920,
+    1080
+  ],
+  "fps": 24,
+  "voice": "Tingting",
+  "speech_rate": "205",
+  "chapters": 14,
+  "subtitle_cues": 61,
+  "example_run": "processed/beauty_the_eye_can_t_see_74d82a19_1b9e123c",
+  "sha256": "0053998fe353654f50b3ed432a0e9522901d0c7e554313d74081b48f3cb6fb88"
+}

@@ -1,0 +1,114 @@
+[
+  {
+    "index": 1,
+    "title": "一个视频进来，一条训练样本出去",
+    "start_seconds": 0.0,
+    "end_seconds": 36.833333333333336,
+    "frames": 884,
+    "movie": "raw"
+  },
+  {
+    "index": 2,
+    "title": "程序决定下一步，模型只回答问题",
+    "start_seconds": 36.833333333333336,
+    "end_seconds": 71.25,
+    "frames": 826,
+    "movie": null
+  },
+  {
+    "index": 3,
+    "title": "11 个节点，4 个阶段",
+    "start_seconds": 71.25,
+    "end_seconds": 107.66666666666667,
+    "frames": 874,
+    "movie": null
+  },
+  {
+    "index": 4,
+    "title": "00–01  冻结配置，完整解码",
+    "start_seconds": 107.66666666666667,
+    "end_seconds": 145.83333333333334,
+    "frames": 916,
+    "movie": "raw"
+  },
+  {
+    "index": 5,
+    "title": "02  建立全片事实时间线",
+    "start_seconds": 145.83333333333334,
+    "end_seconds": 179.20833333333334,
+    "frames": 801,
+    "movie": null
+  },
+  {
+    "index": 6,
+    "title": "03  枚举并排序目标候选",
+    "start_seconds": 179.20833333333334,
+    "end_seconds": 215.95833333333334,
+    "frames": 882,
+    "movie": null
+  },
+  {
+    "index": 7,
+    "title": "04  在目标之外找参考",
+    "start_seconds": 215.95833333333334,
+    "end_seconds": 262.7916666666667,
+    "frames": 1124,
+    "movie": null
+  },
+  {
+    "index": 8,
+    "title": "05  合法帧数与精确导出",
+    "start_seconds": 262.7916666666667,
+    "end_seconds": 307.5,
+    "frames": 1073,
+    "movie": null
+  },
+  {
+    "index": 9,
+    "title": "06  在导出媒体上重新标注",
+    "start_seconds": 307.5,
+    "end_seconds": 344.4583333333333,
+    "frames": 887,
+    "movie": "target"
+  },
+  {
+    "index": 10,
+    "title": "07  稳定编号，渲染六段式提示词",
+    "start_seconds": 344.4583333333333,
+    "end_seconds": 382.4583333333333,
+    "frames": 912,
+    "movie": null
+  },
+  {
+    "index": 11,
+    "title": "08–09  校验、审查，最多修复一次",
+    "start_seconds": 382.4583333333333,
+    "end_seconds": 429.2083333333333,
+    "frames": 1122,
+    "movie": null
+  },
+  {
+    "index": 12,
+    "title": "10  择优、原子发布与四种状态",
+    "start_seconds": 429.2083333333333,
+    "end_seconds": 468.0,
+    "frames": 931,
+    "movie": null
+  },
+  {
+    "index": 13,
+    "title": "产物：pure 给训练，work 留证据",
+    "start_seconds": 468.0,
+    "end_seconds": 504.7916666666667,
+    "frames": 883,
+    "movie": null
+  },
+  {
+    "index": 14,
+    "title": "可复现、怎么运行、目前的限制",
+    "start_seconds": 504.7916666666667,
+    "end_seconds": 548.25,
+    "frames": 1043,
+    "movie": null
+  }
+]

@@ -56,7 +56,7 @@ def _facts():
         "utterances": [{"utterance_id": "u1", "start": 1.0, "speaker_key": "mover", "language": "English", "parts": [
             {"part_id": "u1.1", "shot_id": "shot1", "text": "Help", "lead_scenetrans": False,
              "trail_scenetrans": True, "cutoff": False},
-            {"part_id": "u1.2", "shot_id": "shot2", "text": "[unclear]", "lead_scenetrans": True,
+            {"part_id": "u1.2", "shot_id": "shot2", "text": "me.", "lead_scenetrans": True,
              "trail_scenetrans": False, "cutoff": False}]}],
         "audio": {"reference_audio": []}, "style": "Live action.",
     }
@@ -104,13 +104,39 @@ def test_render_and_structure_checks_round_trip():
     assert "<Subject 1> (appears in [Shot 1]): partially_preserved - the print is kept." in text
     assert "<Video 1> (comic structure): weak_reference - only the pattern." in text
     assert "[Shot 2] At 00:01.208, the camera cuts closer as the mover (S1) continues, " \
-           "<d>[English] <scenetrans> [unclear]</d> carrying over." in text
+           "<d>[English] <scenetrans> me.</d> carrying over." in text
     assert "<d>[English] Help <scenetrans></d>" in text and text.startswith("subject_definitions:\n<Subject 1> is")
     record = {"target": {"num_frames": 175}, "references": labels["reference_records"]}
     failed = [c for c in prompt.check_prompt(text, record, [29], 1) if not c[1]]
     assert [c[0] for c in failed] == ["detailed_description_not_trivial"]
     wrong_cut = dict((c[0], c[1]) for c in prompt.check_prompt(text, record, [40], 1))
     assert wrong_cut["shot_times_match_confirmed_cut_frames"] is False
+
+
+def test_unintelligible_speech_is_left_out_of_the_prompt_not_marked():
+    from stapipe.build import _utterances_from_asr, _words_text
+
+    word = lambda w, s, e, p: {"w": w, "s": s, "e": e, "p": p}
+    evidence = {"available": True, "asr": {"language": "en", "segments": [
+        {"start": 0.0, "end": 1.6, "text": "Thank you.", "no_speech_prob": 0.0, "avg_logprob": -0.4,
+         "words": [word("Thank", 0.2, 0.9, 0.31), word("you.", 0.9, 1.6, 0.93)]},
+        {"start": 3.0, "end": 4.0, "text": "Come in.", "no_speech_prob": 0.0, "avg_logprob": -0.2,
+         "words": [word("Come", 3.0, 3.4, 0.95), word("in.", 3.4, 4.0, 0.97)]}]}}
+    utterances, omitted, uncertain = _utterances_from_asr(evidence, AttrDict(DEFAULTS), 5.0)
+    # 含低置信词的整句被省略：不保留听清的那几个词，也不产生占位符，只留下区间
+    assert [(u["utterance_id"], _words_text(u["words"])) for u in utterances] == [("u1", "Come in.")]
+    assert [(o["start"], o["end"]) for o in omitted] == [(0.2, 1.6)]
+    assert len(uncertain) == 1 and abs(uncertain[0]["span"][0] - 0.1) < 1e-9 and abs(uncertain[0]["span"][1] - 1.7) < 1e-9
+
+
+def test_placeholder_in_a_rendered_prompt_fails_the_structure_check():
+    facts, draft = _facts(), _draft()
+    labels = prompt.allocate_labels(REFERENCES, facts)
+    text = prompt.render_six_sections(draft, facts, labels)
+    record = {"target": {"num_frames": 175}, "references": labels["reference_records"]}
+    assert dict((c[0], c[1]) for c in prompt.check_prompt(text, record, [29], 1))["no_unintelligible_placeholder"]
+    marked = dict((c[0], c[1]) for c in prompt.check_prompt(text.replace("me.", "[unclear]"), record, [29], 1))
+    assert marked["no_unintelligible_placeholder"] is False
 
 
 def test_draft_validation_rejects_program_owned_markup_and_missing_tokens():

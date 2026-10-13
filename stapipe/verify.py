@@ -263,8 +263,12 @@ def verify_package(pure: Path, work: Path, m, cfg, checks) -> dict:
     checks.record(c, "spans_wellformed_sorted_merged_within_target", all(
         isinstance(s, list) and len(s) == 2 and 0 <= s[0] < s[1] <= total + 1e-6 for s in spans) and all(
         x[1] < y[0] for x, y in zip(spans, spans[1:])), spans)
-    checks.record(c, "unclear_or_spans_imply_needs_audio_review", rec["needs_audio_review"] or not (
-        "[unclear]" in prompt or spans), f"needs_audio_review={rec['needs_audio_review']}")
+    checks.record(c, "spans_imply_needs_audio_review", rec["needs_audio_review"] or not spans,
+                  f"needs_audio_review={rec['needs_audio_review']}")
+    omitted = facts.get("omitted_speech", [])
+    checks.record(c, "omitted_speech_is_flagged_with_spans", not omitted or (rec["needs_audio_review"] and all(
+        any(s[0] <= o["start"] + 1e-6 and o["end"] <= s[1] + 1e-6 for s in spans) for o in omitted)),
+        f"{len(omitted)} utterance(s) left out of the prompt")
     observed = facts["audio"]["observed_by_model"]
     checks.record(c, "unheard_audio_is_flagged", observed or rec["needs_audio_review"],
                   f"audio observed by a model: {observed}")

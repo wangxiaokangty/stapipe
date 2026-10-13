@@ -289,6 +289,8 @@ def check_prompt(prompt: str, record: dict, confirmed_cut_frames: list[int], tol
     blocks = re.findall(r"<d>(.*?)</d>", prompt, re.S)
     out.append(("dialogue_tags_wellformed", prompt.count("<d>") == prompt.count("</d>") == len(blocks) and all(
         re.match(r"\[[A-Z][a-zA-Z ]+\] \S", b) for b in blocks), blocks))
+    # 听不清的对白整句省略；本实现不渲染“直接复用参考音频词句”的情形，所以占位符不应出现
+    out.append(("no_unintelligible_placeholder", "[unclear]" not in prompt, ""))
     out.append(("dialogue_only_in_detailed_description", "<d>" not in "".join(
         secs[s] for s in SECTIONS if s != "detailed_description"), ""))
     order = list(dict.fromkeys(int(x) for group in re.findall(r"\((S\d+(?:,S\d+)*)\)", body)
